@@ -28,6 +28,7 @@ client.on('ready', () => {
   console.log('connected')
 
   schedule.scheduleJob(rule, function() {
+    console.log('schedule run')
     // Call your desired function
     if (points.isReady) {
       sendL33Tmessage()
@@ -52,12 +53,14 @@ const pointsSpread = [
 let roundContestants = []
 client.on('message', (message) => {
   let currentTime = new Date()
+  let isInRound = _.find(roundContestants, {author: message.author.id})
+  console.log('user in round', isInRound)
 
   if (
     currentTime.getHours() === leetHour &&
     currentTime.getMinutes() === leetMinute &&
     message.content === '1337' &&
-    !_.find(roundContestants, {author: message.author.id})
+    !isInRound
   ) {
     let authorPoints = points.get(message.author.id) || 0
     let messagePoints = pointsSpread[Math.min(roundContestants.length, 9)]
