@@ -17,8 +17,11 @@ const servers = [
   }
 ]
 
-const leetHour = 13
+/// THIS WILL BREAK SOON BUT IM LAZY NOW
+const leetHour = 12
 const leetMinute = 37
+
+
 const rule = new schedule.RecurrenceRule()
 rule.hour = leetHour
 rule.minute = leetMinute + 1
@@ -54,7 +57,6 @@ let roundContestants = []
 client.on('message', (message) => {
   let currentTime = new Date()
   let isInRound = _.find(roundContestants, {author: message.author.id})
-  console.log('user in round', isInRound)
 
   if (
     currentTime.getHours() === leetHour &&
@@ -71,7 +73,7 @@ client.on('message', (message) => {
     })
     points.set(message.author.id, messagePoints + authorPoints)
 
-    console.log(`${message.author.nickname} gets ${messagePoints} and has ${messagePoints+authorPoints} total`)
+    console.log(`${message.author.username} gets ${messagePoints} and has ${messagePoints+authorPoints} total`)
   }
 })
 
@@ -84,32 +86,37 @@ function sendL33Tmessage() {
         let channel = guild.channels.get(channelId)
 
         if (channel) {
-          const embed = new Discord.RichEmbed()
-          embed.setColor(0xE9C452)
+          let allPoints = points.fetchEverything()
 
-          if (roundContestants.length !== 0) {
-            embed.setTitle("HMM...")
-            embed.setImage("https://media.giphy.com/media/26gYOXsPBh3qv420E/source.gif")
+          Promise.all(allPoints.map((_, authorId) => {
+            return guild.fetchMember(authorId)
+          }))
+          .then((users) => {
+            const embed = new Discord.RichEmbed()
+            embed.setColor(0xE9C452)
+  
+            if (roundContestants.length !== 0) {
+              embed.setTitle("HMM...")
+              embed.setImage("https://media.giphy.com/media/26gYOXsPBh3qv420E/source.gif")
 
-            // let allPoints = points.fetchEverything()
-            // let leaderboardString = ''
-            // allPoints.map((points, authorId) => {
-            //   // let user = await guild.fetchMember(authorId)
-
-            //   leaderboardString += `${authorId} - ${points}\n`
-            // })
-            // embed.addField('Leaderboard', leaderboardString)
-          } else {
-            embed.setTitle("HMM... DISQUALIFIED")
-            embed.setImage("https://media.giphy.com/media/12w45ho280Tg88/giphy.gif")
-          }
-
-          channel.send({embed})
-
-          console.log(`Hmmm...-ed in ${guild.name} #${channel.name}`)
-          console.log(`This round ranking:`, roundContestants)
-          roundContestants = []
-          console.log(`Current standings`, points.fetchEverything())
+              let leaderboardString = ''
+              allPoints.map((points, authorId) => {
+                let userName = _.find(users, {id: authorId}).user.username
+                leaderboardString += `${userName} - ${points}\n`
+              })
+              embed.addField('Leaderboard', leaderboardString)
+            } else {
+              embed.setTitle("HMM... DISQUALIFIED")
+              embed.setImage("https://media.giphy.com/media/12w45ho280Tg88/giphy.gif")
+            }
+  
+            channel.send({embed})
+  
+            console.log(`Hmmm...-ed in ${guild.name} #${channel.name}`)
+            console.log(`This round ranking:`, roundContestants)
+            roundContestants = []
+            console.log(`Current standings`, points.fetchEverything())
+          })
         }
       })
     }
