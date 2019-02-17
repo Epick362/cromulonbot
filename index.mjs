@@ -10,9 +10,9 @@ const points = new Enmap({name: "points"});
 
 const servers = [
   {
-    guild: '125721306564919297',
+    guild: '543038638473084938',
     channels: [
-      '545735909899763722'
+      '543038639060549643'
     ]
   }
 ]
