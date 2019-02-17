@@ -1,8 +1,10 @@
+import dotenv from 'dotenv'
 import Discord from 'discord.js'
 import schedule from 'node-schedule-tz'
-import { prefix, token } from './config'
 import Enmap from 'enmap'
 import _ from 'lodash'
+
+dotenv.config()
 
 const client = new Discord.Client()
 const points = new Enmap({name: "points"});
@@ -124,4 +126,4 @@ function sendL33Tmessage() {
 }
 
 
-client.login(token)
+client.login(process.env.DISCORD_TOKEN)
