@@ -56,6 +56,7 @@ const pointsSpread = [
   1
 ]
 let roundContestants = []
+
 client.on('message', (message) => {
   let currentTime = new Date()
   let isInRound = _.find(roundContestants, {author: message.author.id})
@@ -90,30 +91,22 @@ function sendL33Tmessage() {
         if (channel) {
           let allPoints = points.fetchEverything()
 
-          Promise.all(allPoints.map((_, authorId) => {
-            return guild.fetchMember(authorId)
+          Promise.all(allPoints.map(async (_, authorId) => {
+            try {
+              return await guild.fetchMember(authorId)
+            } catch(e) {
+              return {
+                id: authorId,
+                user: { username: 'unknown' }
+              }
+            }
           }))
           .then((users) => {
-            const embed = new Discord.RichEmbed()
-            embed.setColor(0xE9C452)
-  
-            if (roundContestants.length !== 0) {
-              embed.setTitle("HMM...")
-              embed.setImage("https://media.giphy.com/media/26gYOXsPBh3qv420E/source.gif")
-
-              let leaderboardString = ''
-              allPoints.map((points, authorId) => {
-                let userName = _.find(users, {id: authorId}).user.username
-                leaderboardString += `${userName} - ${points}\n`
-              })
-              embed.addField('Leaderboard', leaderboardString)
-            } else {
-              embed.setTitle("HMM... DISQUALIFIED")
-              embed.setImage("https://media.giphy.com/media/12w45ho280Tg88/giphy.gif")
-            }
-  
+            return composeRoundEnd(allPoints, users)
+          })
+          .then((embed) => {
             channel.send({embed})
-  
+
             console.log(`Hmmm...-ed in ${guild.name} #${channel.name}`)
             console.log(`This round ranking:`, roundContestants)
             roundContestants = []
@@ -123,6 +116,28 @@ function sendL33Tmessage() {
       })
     }
   })
+}
+
+function composeRoundEnd(allPoints, users) {
+  const embed = new Discord.RichEmbed()
+  embed.setColor(0xE9C452)
+
+  if (roundContestants.length !== 0) {
+    embed.setTitle("HMM...")
+    embed.setImage("https://media.giphy.com/media/26gYOXsPBh3qv420E/source.gif")
+
+    let leaderboardString = ''
+    allPoints.map((points, authorId) => {
+      let userName = _.find(users, {id: authorId}).user.username
+      leaderboardString += `${userName} - ${points}\n`
+    })
+    embed.addField('Leaderboard', leaderboardString)
+  } else {
+    embed.setTitle("HMM... DISQUALIFIED")
+    embed.setImage("https://media.giphy.com/media/12w45ho280Tg88/giphy.gif")
+  }
+
+  return embed
 }
 
 
