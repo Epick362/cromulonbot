@@ -12,9 +12,9 @@ const points = new Enmap({name: "points"});
 
 const servers = [
   {
-    guild: '543038638473084938',
+    guild: process.env.SERVER,
     channels: [
-      '543038639060549643'
+      process.env.CHANNEL
     ]
   }
 ]
@@ -109,7 +109,6 @@ function sendL33Tmessage() {
 
             console.log(`Hmmm...-ed in ${guild.name} #${channel.name}`)
             console.log(`This round ranking:`, roundContestants)
-            roundContestants = []
             console.log(`Current standings`, points.fetchEverything())
           })
         }
@@ -127,15 +126,28 @@ function composeRoundEnd(allPoints, users) {
     embed.setImage("https://media.giphy.com/media/26gYOXsPBh3qv420E/source.gif")
 
     let leaderboardString = ''
-    allPoints.map((points, authorId) => {
-      let userName = _.find(users, {id: authorId}).user.username
-      leaderboardString += `${userName} - ${points}\n`
+
+    let sortedPlayers = _.orderBy(Array.from(allPoints.keys()), key => allPoints.get(key), 'desc')
+
+    sortedPlayers.map(player => {
+      let points = allPoints.get(player)
+      let userName = _.find(users, {id: player}).user.username
+      leaderboardString += `${userName} - ${points}`
+
+      let inContest = _.find(roundContestants, {author: player})
+      if (inContest) {
+        leaderboardString += ` (+${inContest.roundPoints})`
+      }
+
+      leaderboardString += `\n`
     })
     embed.addField('Leaderboard', leaderboardString)
   } else {
     embed.setTitle("HMM... DISQUALIFIED")
     embed.setImage("https://media.giphy.com/media/12w45ho280Tg88/giphy.gif")
   }
+
+  roundContestants = []
 
   return embed
 }
