@@ -19,8 +19,8 @@ const servers = [
   }
 ]
 
-/// THIS WILL BREAK SOON BUT IM LAZY NOW
-const leetHour = 12
+
+const leetHour = 13
 const leetMinute = 37
 
 
