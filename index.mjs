@@ -58,13 +58,16 @@ const pointsSpread = [
 let roundContestants = []
 
 client.on('message', (message) => {
-  let currentTime = new Date()
+  let intlOptions = {'timeZone': 'Europe/Bratislava', 'hour': 'numeric', 'minute': 'numeric', 'hour12': false}
+  let bratislavaTime = new Intl.DateTimeFormat('en-US', intlOptions).format(new Date())
+
+  let isLeetTime = bratislavaTime === (leetHour + ':' + leetMinute)
+  let isLeetMessage = message.content === '1337'
   let isInRound = _.find(roundContestants, {author: message.author.id})
 
   if (
-    currentTime.getHours() === leetHour &&
-    currentTime.getMinutes() === leetMinute &&
-    message.content === '1337' &&
+    isLeetTime &&
+    isLeetMessage &&
     !isInRound
   ) {
     let authorPoints = points.get(message.author.id) || 0
