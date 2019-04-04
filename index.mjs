@@ -25,9 +25,9 @@ const leetMinute = 37
 
 
 const rule = new schedule.RecurrenceRule()
-rule.hour = leetHour
+rule.hour = leetHour - getBratislavaTimezoneOffset()
 rule.minute = leetMinute + 1
-rule.tz = 'Europe/Bratislava'
+// rule.tz = 'Europe/Bratislava' // not implemented yet, see
 
 client.on('ready', () => {
   console.log('connected')
@@ -82,6 +82,16 @@ client.on('message', (message) => {
     console.log(`${message.author.username} gets ${messagePoints} and has ${messagePoints+authorPoints} total`)
   }
 })
+
+function getBratislavaTimezoneOffset() {
+  let bratislavaIntlOptions = {'timeZone': 'Europe/Bratislava', 'hour': 'numeric', 'hour12': false}
+  let bratislavaHour = new Intl.DateTimeFormat('en-US', bratislavaIntlOptions).format(new Date())
+
+  let utcIntlOptions = {'timeZone': 'UTC', 'hour': 'numeric', 'hour12': false}
+  let utcHour = new Intl.DateTimeFormat('en-US', utcIntlOptions).format(new Date())
+
+  return bratislavaHour - utcHour
+}
 
 function sendL33Tmessage() {
   servers.map(server => {
