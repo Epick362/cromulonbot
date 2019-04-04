@@ -3,6 +3,7 @@ import Discord from 'discord.js'
 import schedule from 'node-schedule-tz'
 import Enmap from 'enmap'
 import _ from 'lodash'
+import moment from 'moment'
 
 dotenv.config()
 
@@ -19,28 +20,13 @@ const servers = [
   }
 ]
 
-
-const leetHour = 13
-const leetMinute = 37
-
-
-const rule = new schedule.RecurrenceRule()
-rule.hour = leetHour
-rule.minute = leetMinute + 1
-rule.tz = 'Europe/Bratislava'
+const L33T_HOUR = 13
+const L33T_MINUTE = 37
 
 client.on('ready', () => {
   console.log('connected')
 
-  schedule.scheduleJob(rule, function() {
-    console.log('schedule run')
-    // Call your desired function
-    if (points.isReady) {
-      sendL33Tmessage()
-    } else {
-      console.error('Cannot send leet messages because DB is not ready')
-    }
-  })
+  setupRecurrentAnnouncement()
 })
 
 const pointsSpread = [
@@ -58,12 +44,10 @@ const pointsSpread = [
 let roundContestants = []
 
 client.on('message', (message) => {
-  let currentTime = new Date()
   let isInRound = _.find(roundContestants, {author: message.author.id})
 
   if (
-    currentTime.getHours() === leetHour &&
-    currentTime.getMinutes() === leetMinute &&
+    isLeetTime() &&
     message.content === '1337' &&
     !isInRound
   ) {
@@ -79,6 +63,13 @@ client.on('message', (message) => {
     console.log(`${message.author.username} gets ${messagePoints} and has ${messagePoints+authorPoints} total`)
   }
 })
+
+function isLeetTime() {
+  let leetTime = moment().zone('Europe/Vienna').hours(L33T_HOUR).minutes(L33T_MINUTE);
+  let currentTime = moment()
+
+  return leetTime.hours === currentTime.hours && leetTime.minutes === currentTime.minutes
+}
 
 function sendL33Tmessage() {
   servers.map(server => {
@@ -152,5 +143,22 @@ function composeRoundEnd(allPoints, users) {
   return embed
 }
 
+function setupRecurrentAnnouncement() {
+  const rule = new schedule.RecurrenceRule()
+  rule.hour = L33T_HOUR
+  rule.minute = L33T_MINUTE + 1
+  rule.tz = 'Europe/Bratislava'
+
+
+  schedule.scheduleJob(rule, () => {
+    console.log('schedule run')
+
+    if (points.isReady) {
+      sendL33Tmessage()
+    } else {
+      console.error('Cannot send leet messages because DB is not ready')
+    }
+  })
+}
 
 client.login(process.env.DISCORD_TOKEN)
