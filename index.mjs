@@ -21,8 +21,8 @@ const servers = [
   }
 ]
 
-const L33T_HOUR = 21
-const L33T_MINUTE = 12
+const L33T_HOUR = 13
+const L33T_MINUTE = 37
 
 client.on('ready', () => {
   console.log('connected')
