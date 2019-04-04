@@ -4,6 +4,7 @@ import schedule from 'node-schedule-tz'
 import Enmap from 'enmap'
 import _ from 'lodash'
 import moment from 'moment'
+import 'moment-timezone';
 
 dotenv.config()
 
@@ -20,8 +21,8 @@ const servers = [
   }
 ]
 
-const L33T_HOUR = 13
-const L33T_MINUTE = 37
+const L33T_HOUR = 21
+const L33T_MINUTE = 12
 
 client.on('ready', () => {
   console.log('connected')
@@ -47,7 +48,7 @@ client.on('message', (message) => {
   let isInRound = _.find(roundContestants, {author: message.author.id})
 
   if (
-    isLeetTime() &&
+    isL33TTime() &&
     message.content === '1337' &&
     !isInRound
   ) {
@@ -64,8 +65,12 @@ client.on('message', (message) => {
   }
 })
 
-function isLeetTime() {
-  let leetTime = moment().zone('Europe/Vienna').hours(L33T_HOUR).minutes(L33T_MINUTE);
+function getL33Tmoment() {
+  return moment().tz('Europe/Vienna').hours(L33T_HOUR).minutes(L33T_MINUTE)
+}
+
+function isL33TTime() {
+  let leetTime = getL33Tmoment()
   let currentTime = moment()
 
   return leetTime.hours === currentTime.hours && leetTime.minutes === currentTime.minutes
@@ -145,10 +150,11 @@ function composeRoundEnd(allPoints, users) {
 
 function setupRecurrentAnnouncement() {
   const rule = new schedule.RecurrenceRule()
-  rule.hour = L33T_HOUR
-  rule.minute = L33T_MINUTE + 1
-  rule.tz = 'Europe/Bratislava'
 
+  let leetTime = getL33Tmoment()
+
+  rule.hour = leetTime.local().hours()
+  rule.minute = leetTime.local().minutes() + 1
 
   schedule.scheduleJob(rule, () => {
     console.log('schedule run')
