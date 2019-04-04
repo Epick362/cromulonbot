@@ -58,15 +58,11 @@ const pointsSpread = [
 let roundContestants = []
 
 client.on('message', (message) => {
-  let intlOptions = {'timeZone': 'Europe/Bratislava', 'hour': 'numeric', 'minute': 'numeric', 'hour12': false}
-  let bratislavaTime = new Intl.DateTimeFormat('en-US', intlOptions).format(new Date())
-
-  let isLeetTime = bratislavaTime === (leetHour + ':' + leetMinute)
   let isLeetMessage = message.content === '1337'
   let isInRound = _.find(roundContestants, {author: message.author.id})
 
   if (
-    isLeetTime &&
+    isLeetTime() &&
     isLeetMessage &&
     !isInRound
   ) {
@@ -91,6 +87,13 @@ function getBratislavaTimezoneOffset() {
   let utcHour = new Intl.DateTimeFormat('en-US', utcIntlOptions).format(new Date())
 
   return bratislavaHour - utcHour
+}
+
+function isLeetTime() {
+  let intlOptions = {'timeZone': 'Europe/Bratislava', 'hour': 'numeric', 'minute': 'numeric', 'hour12': false}
+  let bratislavaTime = new Intl.DateTimeFormat('en-US', intlOptions).format(new Date())
+
+  return bratislavaTime === (leetHour + ':' + leetMinute)
 }
 
 function sendL33Tmessage() {
