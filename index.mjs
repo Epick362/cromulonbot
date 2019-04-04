@@ -27,7 +27,7 @@ const leetMinute = 37
 const rule = new schedule.RecurrenceRule()
 rule.hour = leetHour - getBratislavaTimezoneOffset()
 rule.minute = leetMinute + 1
-// rule.tz = 'Europe/Bratislava' // not implemented yet, see
+// rule.tz = 'Europe/Bratislava' // not implemented yet, see https://github.com/node-schedule/node-schedule/pull/316
 
 client.on('ready', () => {
   console.log('connected')
