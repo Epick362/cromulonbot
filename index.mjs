@@ -21,8 +21,7 @@ const servers = [
   }
 ]
 
-const L33T_HOUR = 13
-const L33T_MINUTE = 37
+const { L33T_HOUR, L33T_MINUTE } = process.env
 
 client.on('ready', () => {
   console.log('connected')
@@ -73,7 +72,7 @@ function isL33TTime() {
   let leetTime = getL33Tmoment()
   let currentTime = moment()
 
-  return leetTime.hours === currentTime.hours && leetTime.minutes === currentTime.minutes
+  return leetTime.hours() === currentTime.hours() && leetTime.minutes() === currentTime.minutes()
 }
 
 function sendL33Tmessage() {
