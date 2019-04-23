@@ -65,12 +65,12 @@ client.on('message', (message) => {
 })
 
 function getL33Tmoment() {
-  return moment().tz('Europe/Vienna').hours(L33T_HOUR).minutes(L33T_MINUTE)
+  return moment().tz('Europe/Vienna').hours(L33T_HOUR).minutes(L33T_MINUTE).utc()
 }
 
 function isL33TTime() {
   let leetTime = getL33Tmoment()
-  let currentTime = moment()
+  let currentTime = moment().utc()
 
   return leetTime.hours() === currentTime.hours() && leetTime.minutes() === currentTime.minutes()
 }
