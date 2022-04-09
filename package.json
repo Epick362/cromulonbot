@@ -14,7 +14,7 @@
     "dotenv": "^6.2.0",
     "enmap": "^4.8.0",
     "lodash": "^4.17.11",
-    "moment": "^2.24.0",
+    "moment": "^2.29.2",
     "moment-timezone": "^0.5.23",
     "node-schedule-tz": "^1.2.1-4"
   }
